@@ -31,6 +31,7 @@ func TestRepoDetails(t *testing.T) {
 
 	var config = config.Get()
 	var cache = cache.New(rc)
+	
 	defer cache.Close()
 	var gt = New(config, cache)
 
@@ -67,6 +68,7 @@ func TestRepoDetails_APIfailure(t *testing.T) {
 
 	var config = config.Get()
 	var cache = cache.New(rc)
+
 	defer cache.Close()
 	var gt = New(config, cache)
 

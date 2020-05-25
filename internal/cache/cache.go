@@ -30,7 +30,7 @@ func init() {
 	prometheus.MustRegister(cacheGets, cachePuts)
 }
 
-// Redis cache
+// Redis cache.
 type Redis struct {
 	redis *redis.Client
 	codec *rediscache.Codec
@@ -68,6 +68,7 @@ func (c *Redis) Get(key string, result interface{}) (err error) {
 // Put on cache
 func (c *Redis) Put(key string, obj interface{}, expire time.Duration) (err error) {
 	cachePuts.Inc()
+	
 	return c.codec.Set(&rediscache.Item{
 		Key:        key,
 		Object:     obj,

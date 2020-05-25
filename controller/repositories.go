@@ -80,6 +80,7 @@ func GetRepoChart(github *github.GitHub, cache *cache.Redis) http.HandlerFunc {
 		}
 		if len(series.XValues) < 2 {
 			ctx.Info("not enough results, adding some fake ones")
+			
 			series.XValues = append(series.XValues, time.Now())
 			series.YValues = append(series.YValues, 1)
 		}
@@ -116,6 +117,7 @@ func GetRepoChart(github *github.GitHub, cache *cache.Redis) http.HandlerFunc {
 			},
 			Series: []chart.Series{series},
 		}
+
 		defer ctx.Trace("chart").Stop(&err)
 		w.Header().Add("content-type", "image/svg+xml;charset=utf-8")
 		w.Header().Add("cache-control", "public, max-age=86400")
