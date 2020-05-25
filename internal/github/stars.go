@@ -24,8 +24,11 @@ type Stargazer struct {
 // Stargazers returns all the stargazers of a given repo
 func (gh *GitHub) Stargazers(repo Repository) (stars []Stargazer, err error) {
 	sem := make(chan bool, 4)
-	var g errgroup.Group
-	var lock sync.Mutex
+	var (
+	g errgroup.Group
+	lock sync.Mutex
+	)
+
 	for page := 1; page <= gh.lastPage(repo); page++ {
 		sem <- true
 		page := page
@@ -45,6 +48,7 @@ func (gh *GitHub) Stargazers(repo Repository) (stars []Stargazer, err error) {
 		})
 	}
 	err = g.Wait()
+
 	sort.Slice(stars, func(i, j int) bool {
 		return stars[i].StarredAt.Before(stars[j].StarredAt)
 	})
@@ -76,6 +80,7 @@ func (gh *GitHub) getStargazersPage(repo Repository, page int) ([]Stargazer, err
 	if err != nil {
 		return stars, err
 	}
+
 	req.Header.Add("Accept", "application/vnd.github.v3.star+json")
 	if gh.token != "" {
 		req.Header.Add("Authorization", fmt.Sprintf("token %s", gh.token))
@@ -107,6 +112,7 @@ func (gh *GitHub) getStargazersPage(repo Repository, page int) ([]Stargazer, err
 	if page == gh.lastPage(repo) {
 		expire = time.Hour * 2
 	}
+
 	ctx.WithField("expire", expire).Info("caching...")
 	if err := gh.cache.Put(
 		fmt.Sprintf("%s_%d", repo.FullName, page),
